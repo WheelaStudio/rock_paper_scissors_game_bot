@@ -156,7 +156,7 @@ namespace rock_paper_scissors_game_bot
         {
             if (systemAlert && !configuration.SendAutomaticAlerts)
                 return;
-            foreach (var userID in dataManager.GetAllUsersID())
+            foreach (var userID in dataManager.GetAllUsersIdentifiers())
             {
                 if (userID != adminID)
                 {

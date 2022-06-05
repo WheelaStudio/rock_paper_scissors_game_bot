@@ -65,7 +65,7 @@
             int count = Convert.ToInt32(command.ExecuteScalar());
             return count != 0;
         }
-        public long[] GetAllUsersID()
+        public long[] GetAllUsersIdentifiers()
         {
             var list = new List<long>();
             var command = dataBase.CreateCommand($"SELECT * FROM players_scores");
