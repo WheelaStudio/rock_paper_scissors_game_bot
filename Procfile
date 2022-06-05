@@ -1,0 +1,1 @@
+worker: cd $HOME/heroku_output && ./rock_paper_scissors_game_bot
