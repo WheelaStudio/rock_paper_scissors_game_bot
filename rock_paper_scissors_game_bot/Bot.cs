@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -224,8 +223,7 @@ namespace rock_paper_scissors_game_bot
             new UnixExitSignal(async delegate
             {
                 Console.WriteLine("Остановка...");
-                await SendAlertToAllUsers("Бот остановлен на тех. обслуживание!", true);
-                Process.GetCurrentProcess().Kill();
+                await SendAlertToAllUsers("Бот остановлен на тех. обслуживание!", true);  
             }).Wait();       
             bot.StartReceiving(
                HandleUpdateAsync,

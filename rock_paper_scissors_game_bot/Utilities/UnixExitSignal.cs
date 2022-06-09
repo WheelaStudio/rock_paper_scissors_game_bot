@@ -18,6 +18,7 @@ namespace rock_paper_scissors_game_bot.Utilities
             {
                 _ = UnixSignal.WaitAny(signals, -1);
                 OnExecute(null, EventArgs.Empty);
+                UnixProcess.GetCurrentProcess().Kill();
             });
         }
     }
