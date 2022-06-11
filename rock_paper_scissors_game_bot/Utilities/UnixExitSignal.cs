@@ -14,12 +14,15 @@ namespace rock_paper_scissors_game_bot.Utilities
         }
         public void Wait()
         {
+            var cancelTokenSource = new CancellationTokenSource();
+            var token = cancelTokenSource.Token;
             _ = Task.Factory.StartNew(() =>
             {
                 _ = UnixSignal.WaitAny(signals, -1);
                 OnExecute(null, EventArgs.Empty);
-                UnixProcess.GetCurrentProcess().Kill();
-            });
+                cancelTokenSource.Cancel();
+                token.ThrowIfCancellationRequested();
+            }, token);
         }
     }
 }
