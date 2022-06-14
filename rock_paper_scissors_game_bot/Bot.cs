@@ -39,7 +39,7 @@ namespace rock_paper_scissors_game_bot
                             await bot.SendTextMessageAsync(chatId: chat,
                                $"{(isExists ? "С возвращением" : "Добро пожаловать")}🎉, {from.FirstName}!\n" +
                                $"Выберите предмет, который вы хотите показать ниже\nБот будет периодически выключаться в связи" +
-                               $" с обслуживанием базы данных хостингом, о котором сообщит бот🤖!\n{GetCurrentStatistics(id)}",
+                               $" с обслуживанием базы данных хостингом, о котором Вам сообщит админ🤴!\n{GetCurrentStatistics(id)}",
                             replyMarkup: AnswersItemsButtons);
                         }
                         else if (text == "/resetgamescore")
@@ -151,17 +151,15 @@ namespace rock_paper_scissors_game_bot
                 return reply;
             }
         }
-        private async Task SendAlertToAllUsers(string alert, bool systemAlert = false)
+        private async Task SendAlertToAllUsers(string alert)
         {
-            if (systemAlert && !configuration.SendAutomaticAlerts)
-                return;
             foreach (var userID in dataManager.GetAllUsersIdentifiers())
             {
                 if (userID != adminID)
                 {
                     try
                     {
-                        await bot.SendTextMessageAsync(chatId: userID, $"{(systemAlert ? "Автоматическое оповещение🤖" : "Сообщение от админа🤴")}:\n{alert}", replyMarkup: AnswersItemsButtons, disableNotification: true);
+                        await bot.SendTextMessageAsync(chatId: userID, $"Сообщение от админа🤴:\n{alert}", replyMarkup: AnswersItemsButtons, disableNotification: true);
                     }
                     catch { }
                 }
@@ -212,19 +210,14 @@ namespace rock_paper_scissors_game_bot
             adminID = configuration.AdminId;
             bot = new(configuration.BotToken);
         }
-        public async void Start()
+        public void Start()
         {
             var cts = new CancellationTokenSource();
             var cancellationToken = cts.Token;
             var receiverOptions = new ReceiverOptions
             {
                 AllowedUpdates = new []{ UpdateType.Message, UpdateType.CallbackQuery },
-            };
-            new UnixExitSignal(async delegate
-            {
-                Console.WriteLine("Остановка...");
-                await SendAlertToAllUsers("Бот остановлен на тех. обслуживание!", true);  
-            }).Wait();       
+            };    
             bot.StartReceiving(
                HandleUpdateAsync,
                HandleErrorAsync,
@@ -232,7 +225,6 @@ namespace rock_paper_scissors_game_bot
                cancellationToken
            );
             Console.WriteLine("Бот запущен!");
-            await SendAlertToAllUsers("Бот запущен!", true);
         }
     }
 }

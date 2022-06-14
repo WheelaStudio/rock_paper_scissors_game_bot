@@ -4,9 +4,8 @@ namespace rock_paper_scissors_game_bot.Utilities
 {
     public class Configuration
     {
-        private readonly string[] variables = { "SEND_AUTOMATIC_ALERTS", "BOT_TOKEN", "ADMIN_ID" };
+        private readonly string[] variables = { "BOT_TOKEN", "ADMIN_ID" };
         #region Config fields
-        private bool? SEND_AUTOMATIC_ALERTS;
         private string? BOT_TOKEN;
         private long? ADMIN_ID;
         #endregion
@@ -27,7 +26,6 @@ namespace rock_paper_scissors_game_bot.Utilities
                 return _instance;
             }
         }
-        public bool SendAutomaticAlerts => (bool)SEND_AUTOMATIC_ALERTS!;
         public string BotToken => BOT_TOKEN!;
         public long AdminId => (long)ADMIN_ID!;
         private string GetConfigValue(string variable)
