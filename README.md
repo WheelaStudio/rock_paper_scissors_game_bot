@@ -7,4 +7,4 @@ He can also reset the current score using the /resetgamescore command\
 This bot is deployed on Heroku as worker\
 It's uses embedded in Heroku PostgreSql as database
 \
-<img src = "https://i.ibb.co/pwJ5RhR/image.png">
+<img src = "https://i.ibb.co/QrT2H2f/image.png">
