@@ -15,7 +15,7 @@ namespace rock_paper_scissors_game_bot
         private readonly string[] answerItems = { "Камень🗿", "Ножницы✂️", "Бумага📄" };
         private const int answerItemsCount = 3;
         private readonly long adminID;
-        public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             try
             {
@@ -38,8 +38,9 @@ namespace rock_paper_scissors_game_bot
                             var isExists = dataManager.Registration(id);
                             await bot.SendTextMessageAsync(chatId: chat,
                                $"{(isExists ? "С возвращением" : "Добро пожаловать")}🎉, {from.FirstName}!\n" +
-                               $"Выберите предмет, который вы хотите показать ниже\nБот будет периодически выключаться в связи" +
-                               $" с обслуживанием базы данных хостингом, о котором Вам сообщит админ🤴!\n{GetCurrentStatistics(id)}",
+                               $"Бот будет периодически выключаться в связи" +
+                               $" с обслуживанием базы данных хостингом, о котором Вам сообщит админ🤴!\n{GetCurrentStatistics(id)}\n" +
+                               $"Выберите предмет, который вы хотите показать, ниже:",
                             replyMarkup: AnswersItemsButtons);
                         }
                         else if (text == "/resetgamescore")
@@ -197,7 +198,7 @@ namespace rock_paper_scissors_game_bot
             return null;
         }
 
-        public async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+        private async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             var msg = $"Произошла ошибка:\n{(configuration.ShowDebugInfo ? exception : exception.Message)}";
             await bot.SendTextMessageAsync(adminID, msg);
