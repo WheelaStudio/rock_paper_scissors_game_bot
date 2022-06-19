@@ -200,7 +200,7 @@ namespace rock_paper_scissors_game_bot
 
         private async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
-            var msg = $"Произошла ошибка:\n{(configuration.ShowDebugInfo ? exception : exception.Message)}";
+            var msg = $"Произошла ошибка:\n{(configuration.ShowDebugInfo ? exception.ToString() : exception.Message)}";
             await bot.SendTextMessageAsync(adminID, msg);
             Console.WriteLine(msg);
         }
