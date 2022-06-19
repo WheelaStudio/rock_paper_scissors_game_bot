@@ -4,10 +4,11 @@ namespace rock_paper_scissors_game_bot.Utilities
 {
     public class Configuration
     {
-        private readonly string[] variables = { "BOT_TOKEN", "ADMIN_ID" };
+        private readonly string[] variables = { "BOT_TOKEN", "ADMIN_ID", "SHOW_DEBUG_INFO" };
         #region Config fields
         private string? BOT_TOKEN;
         private long? ADMIN_ID;
+        private bool? SHOW_DEBUG_INFO;
         #endregion
         private static Configuration? _instance;
         private Database dataBase;
@@ -28,6 +29,7 @@ namespace rock_paper_scissors_game_bot.Utilities
         }
         public string BotToken => BOT_TOKEN!;
         public long AdminId => (long)ADMIN_ID!;
+        public bool ShowDebugInfo => (bool)SHOW_DEBUG_INFO!;
         private string GetConfigValue(string variable)
         {
             var fieldValue = typeof(Configuration).GetField(variable,
