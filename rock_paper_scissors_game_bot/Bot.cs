@@ -10,11 +10,10 @@ namespace rock_paper_scissors_game_bot
     {
         private readonly Configuration configuration;
         private readonly DataManager dataManager;
-        private readonly TelegramBotClient bot;
+        private TelegramBotClient bot;
         private readonly Random random = new();
         private readonly string[] answerItems = { "Камень🗿", "Ножницы✂️", "Бумага📄" };
         private const int answerItemsCount = 3;
-        private readonly long adminID;
         private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             try
@@ -47,7 +46,7 @@ namespace rock_paper_scissors_game_bot
                         {
                             await bot.SendTextMessageAsync(chatId: chat, "Вы действительно хотите сбросить счёт?", replyMarkup: ResetStatisticsButtons);
                         }
-                        else if (text.StartsWith("/setConfig(") && id == adminID)
+                        else if (text.StartsWith("/setConfig(") && id == configuration.Admin_id)
                         {
                             try
                             {
@@ -62,7 +61,7 @@ namespace rock_paper_scissors_game_bot
                                 await bot.SendTextMessageAsync(chatId: chat, $"Ошибка: {e.Message}", replyMarkup: AnswersItemsButtons, replyToMessageId: message.MessageId);
                             }
                         }
-                        else if (text == "/config" && id == adminID)
+                        else if (text == "/config" && id == configuration.Admin_id)
                         {
                             var config = configuration.Config;
                             var configView = "";
@@ -72,7 +71,7 @@ namespace rock_paper_scissors_game_bot
                                 SendTextMessageAsync(chatId: chat,
                                 $"Конфигурация бота:\n{configView}", replyMarkup: AnswersItemsButtons, replyToMessageId: message.MessageId);
                         }
-                        else if (text.StartsWith("/alert=") && id == adminID)
+                        else if (text.StartsWith("/alert=") && id == configuration.Admin_id)
                         {
                             var alert = text.Split("=")[1];
                             if (alert == "")
@@ -83,7 +82,7 @@ namespace rock_paper_scissors_game_bot
                             await SendAlertToAllUsers(alert);
                             await bot.SendTextMessageAsync(chatId: chat, "Предупреждение всем успешно отправлено!", replyMarkup: AnswersItemsButtons, replyToMessageId: message.MessageId);
                         }
-                        else if (text == "/reconnect" && id == adminID)
+                        else if (text == "/reconnect" && id == configuration.Admin_id)
                         {
                             dataManager.Reconnect();
                             await bot.SendTextMessageAsync(chatId: chat, "Повторное подключение прошло успешно!", replyMarkup: AnswersItemsButtons, replyToMessageId: message.MessageId);
@@ -154,9 +153,10 @@ namespace rock_paper_scissors_game_bot
         }
         private async Task SendAlertToAllUsers(string alert)
         {
+            var adminId = configuration.Admin_id;
             foreach (var userID in dataManager.GetAllUsersIdentifiers())
             {
-                if (userID != adminID)
+                if (userID != adminId)
                 {
                     try
                     {
@@ -200,16 +200,20 @@ namespace rock_paper_scissors_game_bot
 
         private async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
-            var msg = $"Произошла ошибка:\n{(configuration.ShowDebugInfo ? exception.ToString() : exception.Message)}";
-            await bot.SendTextMessageAsync(adminID, msg);
+            var msg = $"Произошла ошибка:\n{(configuration.Show_Debug_Info ? exception.ToString() : exception.Message)}";
+            await bot.SendTextMessageAsync(configuration.Admin_id, msg);
             Console.WriteLine(msg);
         }
         public Bot()
         {
             dataManager = DataManager.Instance;
             configuration = Configuration.Instance;
-            adminID = configuration.AdminId;
-            bot = new(configuration.BotToken);
+            bot = new(configuration.Bot_token);
+            configuration.AddFieldValueChangedHandler(configuration.Bot_token, delegate
+            {
+                bot = new(configuration.Bot_token);
+                Console.WriteLine("Токен бота успешно изменён!");
+            });
         }
         public void Start()
         {
@@ -218,7 +222,7 @@ namespace rock_paper_scissors_game_bot
             var receiverOptions = new ReceiverOptions
             {
                 AllowedUpdates = new []{ UpdateType.Message, UpdateType.CallbackQuery },
-            };    
+            };
             bot.StartReceiving(
                HandleUpdateAsync,
                HandleErrorAsync,

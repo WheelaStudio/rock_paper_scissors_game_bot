@@ -4,6 +4,20 @@ namespace rock_paper_scissors_game_bot.Utilities
 {
     public class Configuration
     {
+        class FieldValueChangedHandler
+        {
+            public string fieldName { get; private set; }
+            private Action handleAction;
+            public FieldValueChangedHandler(string fieldName, Action handleAction)
+            {
+                this.fieldName = fieldName;
+                this.handleAction = handleAction;
+            }
+            public void Invoke()
+            {
+                handleAction?.Invoke();
+            }
+        }
         private readonly string[] variables = { "BOT_TOKEN", "ADMIN_ID", "SHOW_DEBUG_INFO" };
         #region Config fields
         private string? BOT_TOKEN;
@@ -12,6 +26,7 @@ namespace rock_paper_scissors_game_bot.Utilities
         #endregion
         private static Configuration? _instance;
         private Database dataBase;
+        private List<FieldValueChangedHandler> fieldValueChangedHandlers = new();
         public Configuration()
         {
             dataBase = Database.Instance;
@@ -27,9 +42,16 @@ namespace rock_paper_scissors_game_bot.Utilities
                 return _instance;
             }
         }
-        public string BotToken => BOT_TOKEN!;
-        public long AdminId => (long)ADMIN_ID!;
-        public bool ShowDebugInfo => (bool)SHOW_DEBUG_INFO!;
+        public string Bot_token => BOT_TOKEN!;
+        public long Admin_id => (long)ADMIN_ID!;
+        public bool Show_Debug_Info => (bool)SHOW_DEBUG_INFO!;
+        public void AddFieldValueChangedHandler(object field, Action handleAction)
+        {
+            var fieldName = nameof(field).ToUpper();
+            if (!variables.Contains(fieldName))
+                throw new ArgumentException("This field does not exist!");
+            fieldValueChangedHandlers.Add(new FieldValueChangedHandler(fieldName, handleAction));
+        }
         private string GetConfigValue(string variable)
         {
             var fieldValue = typeof(Configuration).GetField(variable,
@@ -49,6 +71,11 @@ namespace rock_paper_scissors_game_bot.Utilities
             SetFieldValue(variable, value);
             var command = dataBase.CreateCommand($"UPDATE config SET VALUE = '{value}' WHERE VARIABLE = '{variable}'");
             _ = command.ExecuteNonQuery();
+            foreach (var handler in fieldValueChangedHandlers)
+            {
+                if (handler.fieldName == variable)
+                    handler.Invoke();
+            }
         }
         private void SetFieldValue(string variable, string value)
         {
