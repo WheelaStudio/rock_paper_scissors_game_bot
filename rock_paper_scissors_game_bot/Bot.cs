@@ -197,11 +197,11 @@ namespace rock_paper_scissors_game_bot
             }
             return null;
         }
-
+        private async Task SendMessageToAdmin(string msg) { await bot.SendTextMessageAsync(configuration.Admin_id, msg); }
         private async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             var msg = $"Произошла ошибка:\n{(configuration.Show_Debug_Info ? exception.ToString() : exception.Message)}";
-            await bot.SendTextMessageAsync(configuration.Admin_id, msg);
+            await SendMessageToAdmin(msg);
             Console.WriteLine(msg);
         }
         public Bot()
@@ -209,19 +209,20 @@ namespace rock_paper_scissors_game_bot
             dataManager = DataManager.Instance;
             configuration = Configuration.Instance;
             bot = new(configuration.Bot_token);
-            configuration.AddFieldValueChangedHandler(nameof(configuration.Bot_token), async delegate
+            configuration.AddFieldValueChangedHandler(nameof(configuration.Bot_token), async () =>
             {
-                await bot.CloseAsync();
-                bot = new(configuration.Bot_token);
-                Start();
-                Console.WriteLine("Токен бота успешно изменён!");
+                await SendMessageToAdmin("Перезапустите бота в панели управления Heroku!");
+            });
+            configuration.AddFieldValueChangedHandler(nameof(configuration.Admin_id), async () =>
+            {
+                await SendMessageToAdmin("Вы стали администратором бота🤖!");
             });
         }
         public void Start()
         {
             var receiverOptions = new ReceiverOptions
             {
-                AllowedUpdates = new []{ UpdateType.Message, UpdateType.CallbackQuery },
+                AllowedUpdates = new[] { UpdateType.Message, UpdateType.CallbackQuery },
             };
             bot.StartReceiving(
                HandleUpdateAsync,
