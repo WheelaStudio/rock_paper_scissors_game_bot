@@ -209,16 +209,16 @@ namespace rock_paper_scissors_game_bot
             dataManager = DataManager.Instance;
             configuration = Configuration.Instance;
             bot = new(configuration.Bot_token);
-            configuration.AddFieldValueChangedHandler(nameof(configuration.Bot_token), delegate
+            configuration.AddFieldValueChangedHandler(nameof(configuration.Bot_token), async delegate
             {
+                await bot.CloseAsync();
                 bot = new(configuration.Bot_token);
+                Start();
                 Console.WriteLine("Токен бота успешно изменён!");
             });
         }
         public void Start()
         {
-            var cts = new CancellationTokenSource();
-            var cancellationToken = cts.Token;
             var receiverOptions = new ReceiverOptions
             {
                 AllowedUpdates = new []{ UpdateType.Message, UpdateType.CallbackQuery },
@@ -226,8 +226,7 @@ namespace rock_paper_scissors_game_bot
             bot.StartReceiving(
                HandleUpdateAsync,
                HandleErrorAsync,
-               receiverOptions,
-               cancellationToken
+               receiverOptions
            );
             Console.WriteLine("Бот запущен!");
         }
