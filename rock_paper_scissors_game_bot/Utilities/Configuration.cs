@@ -45,9 +45,9 @@ namespace rock_paper_scissors_game_bot.Utilities
         public string Bot_token => BOT_TOKEN!;
         public long Admin_id => (long)ADMIN_ID!;
         public bool Show_Debug_Info => (bool)SHOW_DEBUG_INFO!;
-        public void AddFieldValueChangedHandler(object field, Action handleAction)
+        public void AddFieldValueChangedHandler(string propertyName, Action handleAction)
         {
-            var fieldName = nameof(field).ToUpper();
+            var fieldName = propertyName.ToUpper();
             if (!variables.Contains(fieldName))
                 throw new ArgumentException("This field does not exist!");
             fieldValueChangedHandlers.Add(new FieldValueChangedHandler(fieldName, handleAction));

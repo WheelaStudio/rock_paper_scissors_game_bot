@@ -209,7 +209,7 @@ namespace rock_paper_scissors_game_bot
             dataManager = DataManager.Instance;
             configuration = Configuration.Instance;
             bot = new(configuration.Bot_token);
-            configuration.AddFieldValueChangedHandler(configuration.Bot_token, delegate
+            configuration.AddFieldValueChangedHandler(nameof(configuration.Bot_token), delegate
             {
                 bot = new(configuration.Bot_token);
                 Console.WriteLine("Токен бота успешно изменён!");
