@@ -99,7 +99,7 @@ namespace rock_paper_scissors_game_bot
                                 {
                                     dataManager.IncreaseStatisticsParameter(id, value.result.Value);
                                 }
-                                await bot.SendTextMessageAsync(chatId: chat, $"{value.text}\n{GetCurrentStatistics(id)}", replyMarkup: AnswersItemsButtons);
+                                await bot.SendTextMessageAsync(chatId: chat, $"{value.text}\n{GetCurrentStatistics(id)}", replyMarkup: AnswersItemsButtons, replyToMessageId: message.MessageId);
                             }
                         }
                     }
