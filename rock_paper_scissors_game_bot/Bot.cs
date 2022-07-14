@@ -37,16 +37,15 @@ namespace rock_paper_scissors_game_bot
                             var isExists = dataManager.Registration(id);
                             await bot.SendTextMessageAsync(chatId: chat,
                                $"{(isExists ? "С возвращением" : "Добро пожаловать")}🎉, {from.FirstName}!\n" +
-                               $"Бот будет периодически выключаться в связи" +
-                               $" с обслуживанием базы данных хостингом, о котором Вам сообщит админ🤴!\n{GetCurrentStatistics(id)}\n" +
-                               $"Выберите предмет, который вы хотите показать, ниже:",
+                               $"{GetCurrentStatistics(id)}\n" +
+                               $"Выберите предмет, который вы хотите показать, ниже",
                             replyMarkup: AnswersItemsButtons);
                         }
                         else if (text == "/resetgamescore")
                         {
                             await bot.SendTextMessageAsync(chatId: chat, "Вы действительно хотите сбросить счёт?", replyMarkup: ResetStatisticsButtons);
                         }
-                        else if (text.StartsWith("/setConfig(") && id == configuration.Admin_id)
+                        else if (text!.StartsWith("/setConfig(") && id == configuration.Admin_id)
                         {
                             try
                             {
